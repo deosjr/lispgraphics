@@ -1,6 +1,8 @@
 package main
 
 import (
+    "math"
+
     "github.com/deosjr/lispadventures/lisp"
 	"github.com/faiface/pixel/pixelgl"
 )
@@ -12,6 +14,12 @@ func main() {
 func run() {
     l := lisp.New()
     LoadPixel(l.Env)
+    l.Env.AddBuiltin("sin", func(args []lisp.SExpression) (lisp.SExpression, error) {
+        return lisp.NewPrimitive(math.Sin(args[0].AsNumber())), nil
+    })
+    l.Env.AddBuiltin("cos", func(args []lisp.SExpression) (lisp.SExpression, error) {
+        return lisp.NewPrimitive(math.Cos(args[0].AsNumber())), nil
+    })
 
     l.Eval("(define win-w 1024)")
     l.Eval("(define win-h 768)")
@@ -71,15 +79,17 @@ func loadTurtleGraphics(l lisp.Lisp) {
     l.Eval("(define turtle-pen-colour red)")
     l.Eval("(define turtle-pen-down #t)")
     l.Eval("(define turtle-pos (cons (/ win-w 2) (/ win-h 2)))")
-    l.Eval("(define turtle-heading (cons 0 1))")
+    l.Eval("(define turtle-heading 0)")
 
-    l.Eval(`(define left (lambda () (let ((vx (car turtle-heading)) (vy (cdr turtle-heading)))
-        (set! 'turtle-heading (cons (* vy -1) vx))
-    )))`)
-    l.Eval(`(define right (lambda () (let ((vx (car turtle-heading)) (vy (cdr turtle-heading)))
-        (set! 'turtle-heading (cons vy (- 0 vx)))
-    )))`)
-    l.Eval(`(define forward (lambda (n) (let ((px (car turtle-pos)) (py (cdr turtle-pos)) (vx (car turtle-heading)) (vy (cdr turtle-heading)))
+    l.Eval(`(define mod-fixed (lambda (n m)
+        (if (> n 0) (mod n m) (mod (+ n m) m)))) `)
+
+    l.Eval(`(define turn (lambda (radians)
+        (set! 'turtle-heading (mod-fixed (+ turtle-heading radians) (* 2 pi)))))`)
+    l.Eval("(define left (lambda () (turn (/ pi 2))))")
+    l.Eval("(define right (lambda () (turn (- 0 (/ pi 2)))))")
+
+    l.Eval(`(define forward (lambda (n) (let ((px (car turtle-pos)) (py (cdr turtle-pos)) (vx (cos turtle-heading)) (vy (sin turtle-heading)))
         (let ((newx (+ px (* n vx))) (newy (+ py (* n vy))))
             (let ((newpos (cons newx newy)))
                 (if (eqv? turtle-pen-down #t) (draw-line turtle-pos newpos))
@@ -87,8 +97,6 @@ func loadTurtleGraphics(l lisp.Lisp) {
                 (wraparound)
     )))))`)
 
-    l.Eval(`(define mod-fixed (lambda (n m)
-        (if (> n 0) (mod n m) (mod (+ n m) m)))) `)
     l.Eval(`(define wraparound (lambda () (let ((px (car turtle-pos)) (py (cdr turtle-pos)))
         (set! 'turtle-pos (cons (mod-fixed px win-w) (mod-fixed py win-h)))
     )))`)
@@ -103,9 +111,20 @@ func loadTurtleGraphics(l lisp.Lisp) {
             (update win)
     )))`)
 
+    l.Eval("(define gosper3 (quote (f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f l f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f r r l f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f r f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f r r l f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f r f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f l f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f l f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f r l l f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f l f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f r f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f l f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f r l l f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f r f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f r)))")
+    l.Eval("(define program (quote ()))")
+
     l.Eval(`(define start (lambda ()
+        (begin
+        (set! 'program gosper3)
         (set! 'tick (lambda () (begin
-            (forward 10)
-            (set! 'turtle-pen-down (not turtle-pen-down)
-    ))))))`)
+            (if (null? program) (set! 'program (quote (done))))
+            (let ((next (car program)) (rem (cdr program)))
+                (cond
+                    ((eqv? next 'f) (forward 10))
+                    ((eqv? next 'l)  (turn (/ pi 3)))
+                    ((eqv? next 'r) (turn (- 0 (/ pi 3))))
+                    (else #t))
+                (set! 'program rem)
+    )))))))`)
 }
