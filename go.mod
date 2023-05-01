@@ -3,7 +3,7 @@ module github.com/deosjr/wysiwyg
 go 1.20
 
 require (
-	github.com/deosjr/lispadventures v0.0.0-20230423075722-aaa276f1f329
+	github.com/deosjr/lispadventures v0.0.0-20230501103534-873bd85563c9
 	github.com/faiface/pixel v0.10.0
 )
 
