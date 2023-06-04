@@ -1,7 +1,7 @@
 package main
 
 import (
-    "github.com/deosjr/lispadventures/lisp"
+    "github.com/deosjr/whistle/lisp"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"

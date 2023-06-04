@@ -3,7 +3,7 @@ package main
 import (
     "math"
 
-    "github.com/deosjr/lispadventures/lisp"
+    "github.com/deosjr/whistle/lisp"
 	"github.com/faiface/pixel/pixelgl"
 )
 
@@ -29,8 +29,8 @@ func run() {
     // TODO hack! this isnt behaviour of LISP set!, this is overriding on toplevel always!
     // Should either implement set! properly or pass turtle _everywhere_
     // usage: (set! 'top 3)
-    l.Eval("(define set! (lambda (s v) (eval (list 'define s (quasiquote (quote ,v))) env) ))")
-    l.Eval("(define not (lambda (t) (if (eqv? t #t) #f #t)))")
+    //l.Eval("(define set! (lambda (s v) (eval (list 'define s (quasiquote (quote ,v))) env) ))")
+    //l.Eval("(define not (lambda (t) (if (eqv? t #t) #f #t)))")
 
     // this is still pretty hacky...
     l.Eval("(define env (environment))")
@@ -85,7 +85,7 @@ func loadTurtleGraphics(l lisp.Lisp) {
         (if (> n 0) (mod n m) (mod (+ n m) m)))) `)
 
     l.Eval(`(define turn (lambda (radians)
-        (set! 'turtle-heading (mod-fixed (+ turtle-heading radians) (* 2 pi)))))`)
+        (set! turtle-heading (mod-fixed (+ turtle-heading radians) (* 2 pi)))))`)
     l.Eval("(define left (lambda () (turn (/ pi 2))))")
     l.Eval("(define right (lambda () (turn (- 0 (/ pi 2)))))")
 
@@ -93,12 +93,12 @@ func loadTurtleGraphics(l lisp.Lisp) {
         (let ((newx (+ px (* n vx))) (newy (+ py (* n vy))))
             (let ((newpos (cons newx newy)))
                 (if (eqv? turtle-pen-down #t) (draw-line turtle-pos newpos))
-                (set! 'turtle-pos newpos)
+                (set! turtle-pos newpos)
                 (wraparound)
     )))))`)
 
     l.Eval(`(define wraparound (lambda () (let ((px (car turtle-pos)) (py (cdr turtle-pos)))
-        (set! 'turtle-pos (cons (mod-fixed px win-w) (mod-fixed py win-h)))
+        (set! turtle-pos (cons (mod-fixed px win-w) (mod-fixed py win-h)))
     )))`)
 
     l.Eval(`(define draw-line (lambda (from to)
@@ -116,8 +116,8 @@ func loadTurtleGraphics(l lisp.Lisp) {
 
     l.Eval(`(define start (lambda ()
         (begin
-        (set! 'program gosper3)
-        (set! 'tick (lambda () (begin
+        (set! program gosper3)
+        (set! tick (lambda () (begin
             (if (null? program) (set! 'program (quote (done))))
             (let ((next (car program)) (rem (cdr program)))
                 (cond
@@ -125,6 +125,6 @@ func loadTurtleGraphics(l lisp.Lisp) {
                     ((eqv? next 'l)  (turn (/ pi 3)))
                     ((eqv? next 'r) (turn (- 0 (/ pi 3))))
                     (else #t))
-                (set! 'program rem)
+                (set! program rem)
     )))))))`)
 }
