@@ -1,11 +1,7 @@
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/deosjr/lispadventures v0.0.0-20230423075722-aaa276f1f329 h1:r87QtgLgCuqgXB4qUl7AdsxawIj5eQMrOmyzRMovj94=
-github.com/deosjr/lispadventures v0.0.0-20230423075722-aaa276f1f329/go.mod h1:IZOfb5MkERRgc1H4usnfIQj3G1YS+m3HGVUNxhESE/w=
-github.com/deosjr/lispadventures v0.0.0-20230501103534-873bd85563c9 h1:XppTzL9lo7QPbNRSW8R1Q+5JjhvEmc9EuTJ/VMHi/54=
-github.com/deosjr/lispadventures v0.0.0-20230501103534-873bd85563c9/go.mod h1:IZOfb5MkERRgc1H4usnfIQj3G1YS+m3HGVUNxhESE/w=
-github.com/deosjr/whistle v0.0.0-20230603075734-1dc18394c635 h1:BvMErYC4GXUlYmVfBWGFHe1E5cp6uS+Sg5o+A7QnENg=
-github.com/deosjr/whistle v0.0.0-20230603075734-1dc18394c635/go.mod h1:AqJExKTUYXaa+5DDBu0J+d4ajZbabQEiafNepi/Jwvk=
+github.com/deosjr/whistle v0.0.0-20230606141022-90a4546b49c5 h1:aSuo5bPaU/iE4sp08cWaua0BLHEPK26yIvHWFeQhaGs=
+github.com/deosjr/whistle v0.0.0-20230606141022-90a4546b49c5/go.mod h1:AqJExKTUYXaa+5DDBu0J+d4ajZbabQEiafNepi/Jwvk=
 github.com/faiface/glhf v0.0.0-20181018222622-82a6317ac380 h1:FvZ0mIGh6b3kOITxUnxS3tLZMh7yEoHo75v3/AgUqg0=
 github.com/faiface/glhf v0.0.0-20181018222622-82a6317ac380/go.mod h1:zqnPFFIuYFFxl7uH2gYByJwIVKG7fRqlqQCbzAnHs9g=
 github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3 h1:baVdMKlASEHrj19iqjARrPbaRisD7EuZEVJj6ZMLl1Q=
