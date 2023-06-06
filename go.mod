@@ -2,10 +2,12 @@ module github.com/deosjr/lispgraphics
 
 go 1.20
 
-require github.com/faiface/pixel v0.10.0
+require (
+	github.com/deosjr/whistle v0.0.0-20230606141022-90a4546b49c5
+	github.com/faiface/pixel v0.10.0
+)
 
 require (
-	github.com/deosjr/whistle v0.0.0-20230603075734-1dc18394c635 // indirect
 	github.com/faiface/glhf v0.0.0-20181018222622-82a6317ac380 // indirect
 	github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3 // indirect
 	github.com/go-gl/gl v0.0.0-20190320180904-bf2b1f2f34d7 // indirect

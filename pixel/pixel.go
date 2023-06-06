@@ -1,4 +1,5 @@
-package main
+// package pixel is a wrapper around faiface/pixel libraries for use in lisp
+package pixel
 
 import (
 	"github.com/deosjr/whistle/lisp"
@@ -7,37 +8,35 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 )
 
-// wrapper around faiface/pixel libraries for use in lisp
-
-func LoadPixel(env *lisp.Env) {
+func Load(l lisp.Lisp) {
 	// window
-	env.AddBuiltin("window", newWindow)
-	env.AddBuiltin("closed?", isClosed)
-	env.AddBuiltin("clear", clear)
-	env.AddBuiltin("update", update)
+	l.Env.AddBuiltin("window", newWindow)
+	l.Env.AddBuiltin("closed?", isClosed)
+	l.Env.AddBuiltin("clear", clear)
+	l.Env.AddBuiltin("update", update)
 
 	// imdraw
-	env.AddBuiltin("imdraw", newIMDraw)
-	env.AddBuiltin("im-set-color!", setColor)
-	env.AddBuiltin("im-push", push)
-	env.AddBuiltin("im-draw", drawIMDraw)
+	l.Env.AddBuiltin("imdraw", newIMDraw)
+	l.Env.AddBuiltin("im-set-color!", setColor)
+	l.Env.AddBuiltin("im-push", push)
+	l.Env.AddBuiltin("im-draw", drawIMDraw)
 
 	// vector
-	env.AddBuiltin("vec2d", newVector)
+	l.Env.AddBuiltin("vec2d", newVector)
 
 	// colors
-	env.Add("black", lisp.NewPrimitive(pixel.RGB(0, 0, 0)))
-	env.Add("red", lisp.NewPrimitive(pixel.RGB(1, 0, 0)))
-	env.Add("green", lisp.NewPrimitive(pixel.RGB(0, 1, 0)))
-	env.Add("blue", lisp.NewPrimitive(pixel.RGB(0, 0, 1)))
+	l.Env.Add("black", lisp.NewPrimitive(pixel.RGB(0, 0, 0)))
+	l.Env.Add("red", lisp.NewPrimitive(pixel.RGB(1, 0, 0)))
+	l.Env.Add("green", lisp.NewPrimitive(pixel.RGB(0, 1, 0)))
+	l.Env.Add("blue", lisp.NewPrimitive(pixel.RGB(0, 0, 1)))
 
 	// shapes
-	env.AddBuiltin("line", line)
-	env.AddBuiltin("polygon", polygon)
+	l.Env.AddBuiltin("line", line)
+	l.Env.AddBuiltin("polygon", polygon)
 
 	// canvas
-	env.AddBuiltin("canvas", newCanvas)
-	env.AddBuiltin("canvas-draw", drawCanvas)
+	l.Env.AddBuiltin("canvas", newCanvas)
+	l.Env.AddBuiltin("canvas-draw", drawCanvas)
 }
 
 func newWindow(args []lisp.SExpression) (lisp.SExpression, error) {
