@@ -1,11 +1,18 @@
 package main
 
 import (
+	_ "embed"
 	"math"
 
+	"github.com/deosjr/lispgraphics/pixel"
+	"github.com/deosjr/whistle/erlang"
+	"github.com/deosjr/whistle/kanren"
 	"github.com/deosjr/whistle/lisp"
 	"github.com/faiface/pixel/pixelgl"
 )
+
+//go:embed turtle.lisp
+var turtle string
 
 func main() {
 	pixelgl.Run(run)
@@ -13,7 +20,12 @@ func main() {
 
 func run() {
 	l := lisp.New()
-	LoadPixel(l.Env)
+
+	// needed for the repl to work
+	kanren.Load(l)
+	erlang.Load(l)
+
+	pixel.Load(l)
 	l.Env.AddBuiltin("sin", func(args []lisp.SExpression) (lisp.SExpression, error) {
 		return lisp.NewPrimitive(math.Sin(args[0].AsNumber())), nil
 	})
@@ -73,57 +85,8 @@ func run() {
 }
 
 func loadTurtleGraphics(l lisp.Lisp) {
-	// turtle properties
-	l.Eval("(define turtle-line-width 5)")
-	l.Eval("(define turtle-pen-colour red)")
-	l.Eval("(define turtle-pen-down #t)")
-	l.Eval("(define turtle-pos (cons (/ win-w 2) (/ win-h 2)))")
-	l.Eval("(define turtle-heading 0)")
-
-	l.Eval(`(define mod-fixed (lambda (n m)
-        (if (> n 0) (mod n m) (mod (+ n m) m)))) `)
-
-	l.Eval(`(define turn (lambda (radians)
-        (set! turtle-heading (mod-fixed (+ turtle-heading radians) (* 2 pi)))))`)
-	l.Eval("(define left (lambda () (turn (/ pi 2))))")
-	l.Eval("(define right (lambda () (turn (- 0 (/ pi 2)))))")
-
-	l.Eval(`(define forward (lambda (n) (let ((px (car turtle-pos)) (py (cdr turtle-pos)) (vx (cos turtle-heading)) (vy (sin turtle-heading)))
-        (let ((newx (+ px (* n vx))) (newy (+ py (* n vy))))
-            (let ((newpos (cons newx newy)))
-                (if (eqv? turtle-pen-down #t) (draw-line turtle-pos newpos))
-                (set! turtle-pos newpos)
-                (wraparound)
-    )))))`)
-
-	l.Eval(`(define wraparound (lambda () (let ((px (car turtle-pos)) (py (cdr turtle-pos)))
-        (set! turtle-pos (cons (mod-fixed px win-w) (mod-fixed py win-h)))
-    )))`)
-
-	l.Eval(`(define draw-line (lambda (from to)
-        (let ((imd (imdraw)))
-            (im-set-color! imd turtle-pen-colour)
-            (im-push imd (vec2d (car from) (cdr from)))
-            (im-push imd (vec2d (car to) (cdr to)))
-            (line imd turtle-line-width)
-            (im-draw imd win)
-            (update win)
-    )))`)
-
-	l.Eval("(define gosper3 (quote (f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f l f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f r r l f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f r f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f r r l f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f r f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f l f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f l f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f r l l f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f l f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f r f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f l f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f r l l f r f r r f l f l l f f l f r r l f r f f r r f r f l l f l f l f r f f r r f r f l l f l f r r l f r f f r r f r f l l f l f r f r f r r f l f l l f f l f r l l f r f r r f l f l l f f l f r l l f r f f r r f r f l l f l f r)))")
-	l.Eval("(define program (quote ()))")
-
-	l.Eval(`(define start (lambda ()
-        (begin
-        (set! program gosper3)
-        (set! tick (lambda () (begin
-            (if (null? program) (set! program (quote (done))))
-            (let ((next (car program)) (rem (cdr program)))
-                (cond
-                    ((eqv? next 'f) (forward 10))
-                    ((eqv? next 'l)  (turn (/ pi 3)))
-                    ((eqv? next 'r) (turn (- 0 (/ pi 3))))
-                    (else #t))
-                (set! program rem)
-    )))))))`)
+	err := l.Load(turtle)
+	if err != nil {
+		panic(err)
+	}
 }
